@@ -11,6 +11,9 @@ let fps1;
 //frame total
 let fr = 0;
 
+//variable for keyPressed()
+let value = false;
+
 //canvas sizes
 const xSize = window.innerWidth - 16;
 const ySize = window.innerHeight - 16;
@@ -28,6 +31,15 @@ function setup() {
   fps1 = new Ball(ySize / 8 * 7 + 25, 120);
   background(220);
   noLoop();
+
+  fps120.text();
+  fps60.text();
+  fps30.text();
+  fps24.text();
+  fps15.text();
+  fps10.text();
+  fps5.text();
+  fps1.text();
 }
 
 class Ball {
@@ -36,8 +48,8 @@ class Ball {
     this.y = _y;
     this.xv = 3;
     this.radius = 15;
-    this.px = this.x;
     this.delay = delay;
+    this.message = 120 / this.delay + ' fps \n' + round(1000 / 120 * this.delay * 100) / 100 + 'ms';
   }
 
   display() {
@@ -45,28 +57,47 @@ class Ball {
       noStroke();
       fill(220);
       rectMode(CENTER);
-      rect(xSize / 2 + 80, this.y, xSize, this.radius * 2 + 2);
+      rect(xSize / 2 + 80, this.y, xSize, this.radius * 2 + 15);
       stroke(0);
       fill(255);
       circle(this.x, this.y, this.radius);
     }
+  }
 
+  text() {
     fill(0);
     textSize(18);
     noStroke();
-
-    text(120 / this.delay + ' fps \n' + round(1000 / 120 * this.delay * 100) / 100 + 'ms', 5, this.y);
+    text(this.message, 5, this.y);
   }
 
   movement() {
-    this.px = this.x;
-
     this.x += this.xv;
 
     if (this.x + this.radius > xSize) {
       this.xv = -this.xv;
     } else if (this.x - this.radius < 80) {
       this.xv = -this.xv;
+    }
+
+    if (value) {
+      strokeWeight(2);
+      line(this.x - 1, this.y, this.x + 1, this.y);
+      strokeWeight(1);
+    }
+
+    if (keyIsDown(UP_ARROW)) {
+      if (this.xv < 0) {
+        this.xv = -3;
+      } else {
+        this.xv = 3;
+      }
+    } else if (keyIsDown(DOWN_ARROW)) {
+      if (this.xv < 0) {
+        this.xv = -2;
+      } else {
+        this.xv = 2;
+      }
     }
   }
 }
@@ -93,4 +124,14 @@ function __draw() {
   fps1.movement();
   fps1.display();
   fr++;
+
+  fill(0);
+  text('Show true location: ' + value, xSize - 200, 18);
+  text('Speed: ' + abs(fps120.xv), xSize - 77, 36)
+}
+
+function keyPressed() {
+  if (keyCode === 32) {
+    value = !value;
+  }
 }
